@@ -29,13 +29,16 @@ import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A JSONObject is an unordered collection of name/value pairs. Its
@@ -658,7 +661,8 @@ public class JSONObject {
      * @return      true if the key exists in the JSONObject.
      */
     public boolean has(String key) {
-        return this.map.containsKey(key);
+        Object value = this.opt(key);
+        return value != null;
     }
     
     
@@ -772,7 +776,37 @@ public class JSONObject {
      * @return      An object which is the value, or null if there is no value.
      */
     public Object opt(String key) {
-        return key == null ? null : this.map.get(key);
+        if (null == key) {
+            return null;
+        }
+
+        if (this.map.containsKey(key)) {
+            return this.map.get(key);
+        }
+
+        if (!key.contains("_")) {
+            return null;
+        }
+
+        List<String> fields = Arrays.asList(key.split("_"));
+        for (int i = 1; i < fields.size(); i++) {
+            String field = StringUtils.join(fields.subList(0, i), "_");
+            if ("".equals(field)) {
+                continue;
+            }
+            String rest = StringUtils.join(fields.subList(i, fields.size()), "_");
+            if (this.map.containsKey(field)) {
+                Object value = this.map.get(field);
+                if (value instanceof JSONObject) {
+                    Object object = ((JSONObject)value).opt(rest);
+                    if (null != object) {
+                        return object;
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 
 
