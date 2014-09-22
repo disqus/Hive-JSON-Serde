@@ -13,7 +13,7 @@ public class JavaStringJsonObjectInspector extends AbstractPrimitiveJavaObjectIn
     Logger logger = Logger.getLogger(JavaStringJsonObjectInspector.class);
 
     public JavaStringJsonObjectInspector() {
-        super(PrimitiveObjectInspectorUtils.stringTypeEntry);
+        super(TypeEntryShim.stringType);
     }
 
     @Override
