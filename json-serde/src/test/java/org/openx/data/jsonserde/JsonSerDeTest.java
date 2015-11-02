@@ -578,7 +578,13 @@ public class JsonSerDeTest {
         Object obj = serde.serialize(row, soi);
         
         assertTrue(obj instanceof Text);
-        assertEquals("{\"timestamp\":7898,\"two\":43.2,\"one\":true,\"three\":[],\"four\":\"value1\"}", obj.toString());
+        String jsonString = obj.toString();
+        assertEquals(67, jsonString.length());
+        assertTrue(jsonString.indexOf("\"timestamp\":7898") > 0);
+        assertTrue(jsonString.indexOf("\"two\":43.2") > 0);
+        assertTrue(jsonString.indexOf("\"one\":true") > 0);
+        assertTrue(jsonString.indexOf("\"three\":[]") > 0);
+        assertTrue(jsonString.indexOf("\"four\":\"value1\"") > 0);
         
         System.out.println("Output object " + obj.toString());
     }
